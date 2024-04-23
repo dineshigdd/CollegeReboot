@@ -13,6 +13,7 @@ import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../Reducers/userReducer';
 
+
 const RegisterValidationSchema = Yup.object().shape({
   firstName: Yup.string()
     .min(2, 'Too Short!')
@@ -49,6 +50,7 @@ function Signup() {
   const [genderError, setGenderError] = useState('');
   const [branchError, setBranchError] = useState('');
 
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [registerError, setRegisterError] = useState('');
   const [registerSuccess, setRegisterSuccess] = useState('');
   const [registerLoading, setRegisterLoading] = useState(false);
@@ -199,6 +201,14 @@ function Signup() {
     });
   };
 
+  useEffect(()=>{
+    if( isSubmitted == true )
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
+   
+  },[isSubmitted])
+
   console.log(register);
   return (
     <Registeration>
@@ -229,8 +239,11 @@ function Signup() {
             validateGender(values.gender);
             validateBirthDay(values.bYear, values.bMonth, values.bDay);
             registerUser(values);
+            setIsSubmitted(true)
+            // alert(JSON.stringify(values, null, 2));
           }}
         >
+          
           {(formik) => (
             <Form className="register_form" onSubmit={formik.handleSubmit}>
               <div className="reg_line">
@@ -407,10 +420,12 @@ function Signup() {
           )}
         </Formik>
         {registerLoading && <Loading loading={registerLoading} />}
-        {registerError && <ErrorRegister>{registerError}</ErrorRegister>}
+        {registerError && <ErrorRegister>{registerError}</ErrorRegister>}        
         {registerSuccess && (
           <SuccessRegister>{registerSuccess}</SuccessRegister>
         )}
+       
+       { isSubmitted &&  <SignupConfirm>{ "Your account has been successfully created"}</SignupConfirm >}
       </div>
     </Registeration>
   );
@@ -444,6 +459,17 @@ const MessageError = styled.div`
   padding: 10px 20px;
   border-radius: 5px;
   box-shadow: 0 1px 2px var(--shadow-1);
+`;
+
+const SignupConfirm =  styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #b1ede6;
+  padding: 30px 20px 30px 20px;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
 `;
 
 const Registeration = styled.div`
